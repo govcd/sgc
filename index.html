@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Savar Govt. College | GOVCD Portal</title>
+  <link rel="icon" type="image/svg+xml" href="../../govcd.github.io/assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../govcd.github.io/assets/css/style.css">
+</head>
+<body>
+
+<!-- PIN Auth Overlay (329874) -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-top">
+      <img src="../../govcd.github.io/assets/images/logo.svg" alt="GOVCD Logo" class="auth-logo">
+      <div class="auth-title">Savar Govt. College</div>
+      <div class="auth-sub">STUDENT DATABASE SYSTEM &bull; ACCESS PROTECTED</div>
+    </div>
+    <div class="auth-body">
+      <label class="auth-lbl" for="authPinInput">Enter Access PIN</label>
+      <input type="password" id="authPinInput" class="auth-input" maxlength="8" placeholder="••••••" autocomplete="off">
+      <div id="authErrMsg" class="auth-err"></div>
+      <button id="authSubmitBtn" class="auth-btn">
+        <i class="fa-solid fa-lock-open"></i> Unlock Portal
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Header / Navigation Bar -->
+<header class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand-group">
+      <!-- Home Logo Button (Text removed per user request) -->
+      <a class="nav-brand-logo-btn" href="../../govcd.github.io/index.html" title="GOVCD Home / Central Dashboard">
+        <img src="../../govcd.github.io/assets/images/logo.svg" alt="GOVCD Home" class="nav-logo">
+      </a>
+
+      <!-- College Switcher (Hover & Click) -->
+      <div class="switcher-wrap" id="collegeSwitcherWrap">
+        <button class="switcher-btn college-btn" id="collegeBtnText">
+          <span>🏛️ SGC</span> <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="switcher-menu" id="collegeSwitcherMenu"></div>
+      </div>
+
+      <!-- Batch Switcher (Hover & Click - Just the number, e.g. 27 or 26) -->
+      <div class="switcher-wrap" id="batchSwitcherWrap">
+        <button class="switcher-btn batch-btn" id="batchBtnText">
+          <span>🎓 27</span> <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="switcher-menu" id="batchSwitcherMenu"></div>
+      </div>
+    </div>
+
+    <!-- Right Controls: Theme Toggle & Lock Button -->
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <button class="icon-btn lock-btn" id="lockPortalBtn" title="Lock Portal">
+        <i class="fa-solid fa-lock"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+  <!-- Portal Header & Statistics -->
+  <div class="portal-header">
+    <div class="portal-title-wrap">
+      <h2><i class="fa-solid fa-graduation-cap"></i> Student Admission Database</h2>
+      <p>Verified student profiles, admission rolls, subject lists, contact details & documents</p>
+    </div>
+    <div class="portal-stats">
+      <div class="stat-chip"><i class="fa-solid fa-users"></i> Total: <strong id="statTotal">—</strong></div>
+      <div class="stat-chip"><i class="fa-solid fa-atom"></i> Science: <strong id="statScience">—</strong></div>
+      <div class="stat-chip"><i class="fa-solid fa-book-open"></i> Humanities: <strong id="statHumanities">—</strong></div>
+      <div class="stat-chip"><i class="fa-solid fa-chart-line"></i> Business: <strong id="statBusiness">—</strong></div>
+    </div>
+  </div>
+
+  <!-- Control Panel (Search, Filter, View Toggles) -->
+  <div class="control-panel" id="controlPanel">
+    <div class="search-row">
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name, roll, admission roll, phone, etc... (Press '/' to focus)">
+        <button class="clear-search-btn" id="clearSearchBtn" title="Clear search"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+
+    <div class="filters-row">
+      <div class="filters-left">
+        <div class="flt-grp">
+          <label class="flt-lbl" for="groupFilter">Group</label>
+          <select id="groupFilter" class="filter-select">
+            <option value="all">All Groups</option>
+          </select>
+        </div>
+
+        <div class="flt-grp">
+          <label class="flt-lbl" for="sectionFilter">Section</label>
+          <select id="sectionFilter" class="filter-select">
+            <option value="all">All Sections</option>
+          </select>
+        </div>
+
+        <!-- Advanced Filter Button -->
+        <div class="flt-grp">
+          <label class="flt-lbl">Filter Options</label>
+          <button class="btn-filter-trigger" id="openFilterModalBtn">
+            <i class="fa-solid fa-sliders"></i> Filters
+            <span class="filter-count-badge" id="filterActiveBadge" style="display:none;">0</span>
+          </button>
+        </div>
+
+        <div class="flt-grp">
+          <label class="flt-lbl">Display View</label>
+          <div class="view-toggle">
+            <button class="vt-btn active" data-view="photos" title="Photo Grid View (Default)"><i class="fa-solid fa-image"></i> Photos</button>
+            <button class="vt-btn" data-view="compact" title="Compact Cards View"><i class="fa-solid fa-id-card"></i> Compact</button>
+            <button class="vt-btn" data-view="table" title="Full Table View"><i class="fa-solid fa-table-list"></i> Table</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-count" id="resultCount">Loading students...</div>
+    </div>
+  </div>
+
+  <!-- Active Filter Chips Bar (Dynamically shown when filters applied) -->
+  <div class="active-filters-bar" id="activeFiltersBar" style="display:none;"></div>
+
+  <!-- Dynamic Views Container (Photos Grid, Compact, Table) -->
+  <div id="viewsContainer"></div>
+
+  <!-- Pagination & Load More Container (150 per chunk) -->
+  <div id="paginationWrap"></div>
+</main>
+
+<!-- Advanced Filter Window (Modal Dialog) -->
+<div id="filterModalBackdrop">
+  <div class="filter-card" id="filterModalCard">
+    <div class="filter-card-hdr">
+      <div>
+        <h3><i class="fa-solid fa-sliders"></i> Filter Students</h3>
+        <p>Filter by gender, district, board, religion, blood group, quota & year</p>
+      </div>
+      <button class="dos-act-btn close-btn" id="closeFilterModalBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="filter-card-body">
+      <!-- Gender -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalGender">Gender (লিঙ্গ)</label>
+        <select class="f-input" id="fModalGender">
+          <option value="all">All (সকল)</option>
+          <option value="male">Male (ছাত্র)</option>
+          <option value="female">Female (ছাত্রী)</option>
+        </select>
+      </div>
+
+      <!-- Group -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalGroup">Group (বিভাগ)</label>
+        <select class="f-input" id="fModalGroup">
+          <option value="all">All Groups</option>
+        </select>
+      </div>
+
+      <!-- Section -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalSection">Section (শাখা)</label>
+        <select class="f-input" id="fModalSection">
+          <option value="all">All Sections</option>
+        </select>
+      </div>
+
+      <!-- District (Zila) -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalDistrict">District / Zila (জেলা)</label>
+        <select class="f-input" id="fModalDistrict">
+          <option value="all">All Districts</option>
+        </select>
+      </div>
+
+      <!-- Board -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalBoard">Education Board (বোর্ড)</label>
+        <select class="f-input" id="fModalBoard">
+          <option value="all">All Boards</option>
+        </select>
+      </div>
+
+      <!-- Religion -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalReligion">Religion (ধর্ম)</label>
+        <select class="f-input" id="fModalReligion">
+          <option value="all">All Religions</option>
+        </select>
+      </div>
+
+      <!-- Blood Group -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalBloodGroup">Blood Group (রক্তের গ্রুপ)</label>
+        <select class="f-input" id="fModalBloodGroup">
+          <option value="all">All Blood Groups</option>
+        </select>
+      </div>
+
+      <!-- Quota -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalQuota">Quota (কোটা)</label>
+        <select class="f-input" id="fModalQuota">
+          <option value="all">All Students (সকল শিক্ষার্থী)</option>
+          <option value="has_quota">Has Quota (যেকোনো কোটা)</option>
+          <option value="none">General / No Quota (সাধারণ)</option>
+          <option value="ff">Freedom Fighter (মুক্তিযোদ্ধা)</option>
+          <option value="eq">Education Quota (শিক্ষা কোটা)</option>
+        </select>
+      </div>
+
+      <!-- SSC Year -->
+      <div class="f-field" style="grid-column: 1 / -1;">
+        <label class="f-lbl" for="fModalSscYear">SSC Passing Year (পাসের সন)</label>
+        <select class="f-input" id="fModalSscYear">
+          <option value="all">All Passing Years</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-card-foot">
+      <div class="f-matches">Matching: <strong id="filterModalMatchCount">—</strong> students</div>
+      <div class="f-actions">
+        <button class="btn-f btn-f-outline" id="resetFiltersBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        <button class="btn-f btn-f-primary" id="applyFiltersBtn"><i class="fa-solid fa-check"></i> Apply Filters</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Student Dossier Modal Dialog -->
+<div id="modalBackdrop">
+  <div class="dossier-card" id="dossierCard"></div>
+</div>
+
+<!-- Notification Toast -->
+<div id="toast"></div>
+
+<!-- Footer -->
+<footer>
+  &copy; 2026 GOVCD &bull; Savar Govt. College Student Portal &bull; Unified Architecture
+</footer>
+
+<script src="../../govcd.github.io/assets/js/portal.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  initPortal({
+    collegeCode: 'sgc',
+    collegeName: 'Savar Govt. College',
+    batches: [
+      { label: '27', fullLabel: 'HSC-27', key: 'hsc27', session: '2025-2026', jsonUrl: 'hsc27/data/hsc27.json', photoBase: 'hsc27/photos/', pdfBase: 'hsc27/pdfs/' },
+      { label: '26', fullLabel: 'HSC-26', key: 'hsc26', session: '2024-2025', jsonUrl: 'hsc26/data/hsc26.json', photoBase: 'hsc26/photos/', pdfBase: 'hsc26/pdfs/' },
+      { label: '25', fullLabel: 'HSC-25', key: 'hsc25', session: '2023-2024', jsonUrl: 'hsc25/data/hsc25.json', photoBase: 'hsc25/photos/', pdfBase: 'hsc25/pdfs/' },
+      { label: '24', fullLabel: 'HSC-24', key: 'hsc24', session: '2022-2023', jsonUrl: 'hsc24/data/hsc24.json', photoBase: 'hsc24/photos/', pdfBase: 'hsc24/pdfs/' },
+      { label: '23', fullLabel: 'HSC-23', key: 'hsc23', session: '2021-2022', jsonUrl: 'hsc23/data/hsc23.json', photoBase: 'hsc23/photos/', pdfBase: 'hsc23/pdfs/' },
+      { label: '22', fullLabel: 'HSC-22', key: 'hsc22', session: '2020-2021', jsonUrl: 'hsc22/data/hsc22.json', photoBase: 'hsc22/photos/', pdfBase: 'hsc22/pdfs/' },
+      { label: '21', fullLabel: 'HSC-21', key: 'hsc21', session: '2019-2020', jsonUrl: 'hsc21/data/hsc21.json', photoBase: 'hsc21/photos/', pdfBase: 'hsc21/pdfs/' },
+      { label: '20', fullLabel: 'HSC-20', key: 'hsc20', session: '2018-2019', jsonUrl: 'hsc20/data/hsc20.json', photoBase: 'hsc20/photos/', pdfBase: 'hsc20/pdfs/' },
+      { label: '19', fullLabel: 'HSC-19', key: 'hsc19', session: '2017-2018', jsonUrl: 'hsc19/data/hsc19.json', photoBase: 'hsc19/photos/', pdfBase: 'hsc19/pdfs/' }
+    ]
+  });
+});
+</script>
+</body>
+</html>
