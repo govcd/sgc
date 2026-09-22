@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Savar Govt. College | GOVCD Portal</title>
-  <link rel="icon" type="image/svg+xml" href="../../govcd.github.io/assets/images/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="../../govcd.github.io/assets/images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../../govcd.github.io/assets/css/style.css">
+  <link rel="stylesheet" href="../../govcd.github.io/assets/css/style.css?v=20260921_8">
 </head>
 <body>
 
@@ -17,7 +17,7 @@
 <div id="authOverlay">
   <div class="auth-card">
     <div class="auth-top">
-      <img src="../../govcd.github.io/assets/images/logo.svg" alt="GOVCD Logo" class="auth-logo">
+      <img src="../../govcd.github.io/assets/images/favicon.svg?v=20260921_8" alt="GOVCD Logo" class="auth-logo">
       <div class="auth-title">Savar Govt. College</div>
       <div class="auth-sub">STUDENT DATABASE SYSTEM &bull; ACCESS PROTECTED</div>
     </div>
@@ -36,9 +36,9 @@
 <header class="navbar">
   <div class="nav-container">
     <div class="nav-brand-group">
-      <!-- Home Logo Button (Text removed per user request) -->
-      <a class="nav-brand-logo-btn" href="../../govcd.github.io/index.html" title="GOVCD Home / Central Dashboard">
-        <img src="../../govcd.github.io/assets/images/logo.svg" alt="GOVCD Home" class="nav-logo">
+      <!-- Nav Branding / Home Button (Vector Logo) -->
+      <a class="nav-logo-btn" href="../../govcd.github.io/index.html" title="GOVCD Central Dashboard / Home">
+        <img src="../../govcd.github.io/assets/images/favicon.svg?v=20260921_8" alt="GOVCD Logo" class="nav-logo-img">
       </a>
 
       <!-- College Switcher (Hover & Click) -->
@@ -58,13 +58,13 @@
       </div>
     </div>
 
-    <!-- Right Controls: Theme Toggle & Lock Button -->
+    <!-- Right Controls: Lock Button & Theme Toggle -->
     <div class="nav-actions">
-      <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
-        <i class="fa-solid fa-sun"></i>
-      </button>
       <button class="icon-btn lock-btn" id="lockPortalBtn" title="Lock Portal">
         <i class="fa-solid fa-lock"></i>
+      </button>
+      <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
       </button>
     </div>
   </div>
@@ -91,7 +91,8 @@
     <div class="search-row">
       <div class="search-wrap">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by name, roll, admission roll, phone, etc... (Press '/' to focus)">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name, roll, admission roll, phone... (Ctrl + K)">
+        <kbd class="search-kbd-hint">Ctrl K</kbd>
         <button class="clear-search-btn" id="clearSearchBtn" title="Clear search"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
@@ -105,27 +106,30 @@
           </select>
         </div>
 
-        <div class="flt-grp">
-          <label class="flt-lbl" for="sectionFilter">Section</label>
-          <select id="sectionFilter" class="filter-select">
-            <option value="all">All Sections</option>
-          </select>
-        </div>
-
         <!-- Advanced Filter Button -->
         <div class="flt-grp">
           <label class="flt-lbl">Filter Options</label>
-          <button class="btn-filter-trigger" id="openFilterModalBtn">
+          <button class="btn-filter-trigger" id="openFilterModalBtn" title="Open Advanced Filters">
             <i class="fa-solid fa-sliders"></i> Filters
             <span class="filter-count-badge" id="filterActiveBadge" style="display:none;">0</span>
+          </button>
+        </div>
+
+        <!-- Bookmarks Filter Button (Placed after Filters, sleek compact design) -->
+        <div class="flt-grp">
+          <label class="flt-lbl" style="text-align:center;">Bookmarks</label>
+          <button class="btn-filter-trigger btn-bookmark-trigger" id="filterBookmarksBtn" title="Show Bookmarked Profiles Only">
+            <i class="fa-solid fa-bookmark" style="color:#F59E0B;"></i>
+            <span class="filter-count-badge bm-badge" id="bookmarkBadge">0</span>
           </button>
         </div>
 
         <div class="flt-grp">
           <label class="flt-lbl">Display View</label>
           <div class="view-toggle">
+            <button class="vt-btn" data-view="detailed" title="Detailed Cards View (Rich Profile)"><i class="fa-solid fa-id-card"></i> Cards</button>
             <button class="vt-btn active" data-view="photos" title="Photo Grid View (Default)"><i class="fa-solid fa-image"></i> Photos</button>
-            <button class="vt-btn" data-view="compact" title="Compact Cards View"><i class="fa-solid fa-id-card"></i> Compact</button>
+            <button class="vt-btn" data-view="compact" title="Compact List View"><i class="fa-solid fa-border-all"></i> Compact</button>
             <button class="vt-btn" data-view="table" title="Full Table View"><i class="fa-solid fa-table-list"></i> Table</button>
           </div>
         </div>
@@ -227,6 +231,51 @@
         </select>
       </div>
 
+      <!-- Permanent District -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalPermanentDistrict">Permanent District (স্থায়ী জেলা)</label>
+        <select class="f-input" id="fModalPermanentDistrict">
+          <option value="all">All Permanent Districts</option>
+        </select>
+      </div>
+
+      <!-- Present District -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalPresentDistrict">Present District (বর্তমান জেলা)</label>
+        <select class="f-input" id="fModalPresentDistrict">
+          <option value="all">All Present Districts</option>
+        </select>
+      </div>
+
+      <!-- SSC GPA Range -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalGpa">SSC Result / GPA Range (ফলাফল)</label>
+        <select class="f-input" id="fModalGpa">
+          <option value="all">All Results (সকল জিপিএ)</option>
+          <option value="5.00">GPA 5.00 (A+ / Golden)</option>
+          <option value="gte_4.8">GPA &ge; 4.80</option>
+          <option value="gte_4.5">GPA &ge; 4.50</option>
+          <option value="gte_4.0">GPA &ge; 4.00</option>
+          <option value="lt_4.0">GPA &lt; 4.00</option>
+        </select>
+      </div>
+
+      <!-- 4th Subject -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalFourthSubject">4th Subject (ঐচ্ছিক বিষয়)</label>
+        <select class="f-input" id="fModalFourthSubject">
+          <option value="all">All 4th Subjects</option>
+        </select>
+      </div>
+
+      <!-- Elective Subject -->
+      <div class="f-field">
+        <label class="f-lbl" for="fModalElectiveSubject">Elective Subject (নৈর্বাচনিক বিষয়)</label>
+        <select class="f-input" id="fModalElectiveSubject">
+          <option value="all">All Elective Subjects</option>
+        </select>
+      </div>
+
       <!-- SSC Year -->
       <div class="f-field" style="grid-column: 1 / -1;">
         <label class="f-lbl" for="fModalSscYear">SSC Passing Year (পাসের সন)</label>
@@ -259,22 +308,16 @@
   &copy; 2026 GOVCD &bull; Savar Govt. College Student Portal &bull; Unified Architecture
 </footer>
 
-<script src="../../govcd.github.io/assets/js/portal.js"></script>
+<script src="../../govcd.github.io/assets/js/portal.js?v=20260922_1"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   initPortal({
     collegeCode: 'sgc',
     collegeName: 'Savar Govt. College',
+    defaultBatchKey: 'hsc28',
     batches: [
-      { label: '27', fullLabel: 'HSC-27', key: 'hsc27', session: '2025-2026', jsonUrl: 'hsc27/data/hsc27.json', photoBase: 'hsc27/photos/', pdfBase: 'hsc27/pdfs/' },
-      { label: '26', fullLabel: 'HSC-26', key: 'hsc26', session: '2024-2025', jsonUrl: 'hsc26/data/hsc26.json', photoBase: 'hsc26/photos/', pdfBase: 'hsc26/pdfs/' },
-      { label: '25', fullLabel: 'HSC-25', key: 'hsc25', session: '2023-2024', jsonUrl: 'hsc25/data/hsc25.json', photoBase: 'hsc25/photos/', pdfBase: 'hsc25/pdfs/' },
-      { label: '24', fullLabel: 'HSC-24', key: 'hsc24', session: '2022-2023', jsonUrl: 'hsc24/data/hsc24.json', photoBase: 'hsc24/photos/', pdfBase: 'hsc24/pdfs/' },
-      { label: '23', fullLabel: 'HSC-23', key: 'hsc23', session: '2021-2022', jsonUrl: 'hsc23/data/hsc23.json', photoBase: 'hsc23/photos/', pdfBase: 'hsc23/pdfs/' },
-      { label: '22', fullLabel: 'HSC-22', key: 'hsc22', session: '2020-2021', jsonUrl: 'hsc22/data/hsc22.json', photoBase: 'hsc22/photos/', pdfBase: 'hsc22/pdfs/' },
-      { label: '21', fullLabel: 'HSC-21', key: 'hsc21', session: '2019-2020', jsonUrl: 'hsc21/data/hsc21.json', photoBase: 'hsc21/photos/', pdfBase: 'hsc21/pdfs/' },
-      { label: '20', fullLabel: 'HSC-20', key: 'hsc20', session: '2018-2019', jsonUrl: 'hsc20/data/hsc20.json', photoBase: 'hsc20/photos/', pdfBase: 'hsc20/pdfs/' },
-      { label: '19', fullLabel: 'HSC-19', key: 'hsc19', session: '2017-2018', jsonUrl: 'hsc19/data/hsc19.json', photoBase: 'hsc19/photos/', pdfBase: 'hsc19/pdfs/' }
+      { label: '28', fullLabel: 'HSC-28', key: 'hsc28', session: '2026-2027', jsonUrl: 'hsc28/data/hsc28.json', photoBase: 'hsc28/photos/', pdfBase: 'hsc28/pdfs/' },
+      { label: '27', fullLabel: 'HSC-27', key: 'hsc27', session: '2025-2026', jsonUrl: 'hsc27/data/hsc27.json', photoBase: 'hsc27/photos/', pdfBase: 'hsc27/pdfs/' }
     ]
   });
 });

@@ -19,6 +19,14 @@ from PIL import Image
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+try:
+    from bengali_cleaner import clean_bengali_text, normalize_board, clean_record_bengali_fields
+except ImportError:
+    def normalize_board(name, ssc_gpa=''): return name
+    def clean_bengali_text(text): return text
+    def clean_record_bengali_fields(r): return r
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 BASE_URL = "https://savargc.eshiksabd.com"
@@ -35,15 +43,16 @@ GROUPS = {
 }
 
 BATCH_CONFIGS = {
-    "hsc27": {"session": "2526", "label": "2025-2026 (HSC-27)"},
-    "hsc26": {"session": "2425", "label": "2024-2025 (HSC-26)"},
-    "hsc25": {"session": "2324", "label": "2023-2024 (HSC-25)"},
-    "hsc24": {"session": "2223", "label": "2022-2023 (HSC-24)"},
-    "hsc23": {"session": "2122", "label": "2021-2022 (HSC-23)"},
-    "hsc22": {"session": "2021", "label": "2020-2021 (HSC-22)"},
-    "hsc21": {"session": "1920", "label": "2019-2020 (HSC-21)"},
-    "hsc20": {"session": "1819", "label": "2018-2019 (HSC-20)"},
-    "hsc19": {"session": "1718", "label": "2017-2018 (HSC-19)"},
+    "hsc28": {"session": "2627", "label": "2026-2027 (HSC-28)", "session_id": "22"},
+    "hsc27": {"session": "2526", "label": "2025-2026 (HSC-27)", "session_id": "21"},
+    "hsc26": {"session": "2425", "label": "2024-2025 (HSC-26)", "session_id": "20"},
+    "hsc25": {"session": "2324", "label": "2023-2024 (HSC-25)", "session_id": "19"},
+    "hsc24": {"session": "2223", "label": "2022-2023 (HSC-24)", "session_id": "18"},
+    "hsc23": {"session": "2122", "label": "2021-2022 (HSC-23)", "session_id": "17"},
+    "hsc22": {"session": "2021", "label": "2020-2021 (HSC-22)", "session_id": "16"},
+    "hsc21": {"session": "1920", "label": "2019-2020 (HSC-21)", "session_id": "15"},
+    "hsc20": {"session": "1819", "label": "2018-2019 (HSC-20)", "session_id": "14"},
+    "hsc19": {"session": "1718", "label": "2017-2018 (HSC-19)", "session_id": "13"},
 }
 
 COLUMN_ORDER = [
@@ -222,18 +231,51 @@ def parse_application_pdf(pdf_bytes):
         m = re.search(r"Mother'?s? Phone\s*:\s*([0-9]+)", text)
         if m: fields["mother_phone"] = m.group(1).strip()
 
-        m = re.search(r"04\.\s*Permanent Address\s*:\s*(.*?)(?=District:)", text, re.DOTALL)
-        m_pdist = re.search(r"04\..*?District:\s*([A-Za-z]+)", text)
-        if m: fields["permanent_address"] = " ".join(m.group(1).split())
-        if m_pdist: fields["permanent_district"] = m_pdist.group(1).strip()
+        lines = text.split("\n")
+        idx_04, idx_05, idx_06, idx_07, idx_08 = None, None, None, None, None
+        for i, line in enumerate(lines):
+            if re.search(r"04\.\s*Permanent Address", line): idx_04 = i
+            elif re.search(r"05\.\s*Present Address", line): idx_05 = i
+            elif re.search(r"06\.\s*Local Guardian", line): idx_06 = i
+            elif re.search(r"07\.\s*Nationality", line): idx_07 = i
+            elif re.search(r"08\.\s*Father'?s? Occupation", line): idx_08 = i
 
-        m = re.search(r"05\.\s*Present Address\s*:\s*(.*?)(?=District:)", text, re.DOTALL)
-        m_pres_dist = re.search(r"05\..*?District:\s*([A-Za-z]+)", text)
-        if m: fields["present_address"] = " ".join(m.group(1).split())
-        if m_pres_dist: fields["present_district"] = m_pres_dist.group(1).strip()
+        def _clean_addr_block(addr_lines, prefix):
+            dist = ""
+            parts = []
+            for line in addr_lines:
+                l = re.sub(prefix, "", line)
+                m = re.search(r"District\s*:\s*([A-Za-z\s]+?)(?:$)", l)
+                if m:
+                    dist = m.group(1).strip()
+                    l = l[:m.start()] + l[m.end():]
+                l = l.strip(" ,")
+                if l:
+                    parts.append(l)
+            return dist, ", ".join(parts)
 
-        m = re.search(r"06\.\s*Local Guardian Name, Address & Phone\s*:\s*([^\n]+)", text)
-        if m: fields["local_guardian"] = m.group(1).strip()
+        if idx_04 is not None and idx_05 is not None:
+            p_dist, p_addr = _clean_addr_block(lines[idx_04:idx_05], r"04\.\s*Permanent Address\s*:\s*")
+            fields["permanent_district"] = p_dist
+            fields["permanent_address"] = p_addr
+
+        if idx_05 is not None and idx_06 is not None:
+            pres_dist, pres_addr = _clean_addr_block(lines[idx_05:idx_06], r"05\.\s*Present Address\s*:\s*")
+            fields["present_district"] = pres_dist
+            fields["present_address"] = pres_addr
+
+        if idx_06 is not None and idx_07 is not None:
+            guard_lines = lines[idx_06:idx_07]
+            guard_parts = []
+            for line in guard_lines:
+                l = re.sub(r"06\.\s*Local Guardian Name, Address & Phone\s*:\s*", "", line).strip()
+                if l and not re.search(r"07\.\s*Nationality", l):
+                    guard_parts.append(l)
+            guard_text = " ".join(guard_parts).strip()
+            if guard_text.upper() in ["N/A", "N/A N/A", "NONE", "NO", "—", "-"]:
+                fields["local_guardian"] = "N/A"
+            else:
+                fields["local_guardian"] = guard_text
 
         m = re.search(r"07\.\s*Nationality\s*:\s*([A-Za-z]+)", text)
         if m: fields["nationality"] = m.group(1).strip()
@@ -246,11 +288,15 @@ def parse_application_pdf(pdf_bytes):
         m_dob = re.search(r"09\.\s*Date of Birth\s*:\s*([0-9A-Za-z\-]+)", text)
         if m_dob: fields["date_of_birth"] = m_dob.group(1).strip()
 
-        m_quota = re.search(r"12\.\s*Quota\s*:\s*([^\n\r]+)", text)
-        if m_quota:
-            q_val = m_quota.group(1).strip()
-            if not any(k in q_val for k in ["Religion", "Blood", "10.", "13."]):
-                fields["quota"] = q_val
+        for line in lines:
+            m_quota = re.search(r"12\.\s*Quota\s*:\s*(.*)$", line)
+            if m_quota:
+                q_val = m_quota.group(1).strip()
+                if not any(k in q_val for k in ["Religion", "Blood", "10.", "13."]):
+                    fields["quota"] = q_val if q_val else "—"
+                else:
+                    fields["quota"] = "—"
+                break
 
         m_rel = re.search(r"10\.\s*Religion\s*:\s*([A-Za-z]+)", text)
         if m_rel: fields["religion"] = m_rel.group(1).strip()
@@ -263,7 +309,7 @@ def parse_application_pdf(pdf_bytes):
             fields["ssc_roll"] = m.group(1)
             fields["ssc_reg"] = m.group(2)
             fields["ssc_year"] = m.group(5)
-            fields["ssc_board"] = m.group(6)
+            fields["ssc_board"] = normalize_board(m.group(6), m.group(7))
             fields["ssc_gpa"] = m.group(7)
 
         sub_lines = []
@@ -552,7 +598,7 @@ def scrape_single_batch(session, batch_key, resume=True):
                 try:
                     r_app = session.post(f"{BASE_URL}/controller_student_module.php", data={
                         "rootData": adm_roll,
-                        "sessionID": "21",
+                        "sessionID": cfg_batch.get("session_id", "21"),
                         "flagreq": "checkTransaction"
                     })
                     app_code = r_app.text.strip()
